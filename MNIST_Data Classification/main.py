@@ -5,7 +5,7 @@ import torch.nn as nn
 import numpy as np
 
 from utils import load_MNIST, random_draw, match_ratio
-from CNN import cnn
+from CNN import CNN
 
 
 
@@ -19,6 +19,7 @@ def train():
 
     train_data, train_label, test_data, test_label = load_MNIST()
 
+    cnn = CNN()
 
     optimizer = optim.Adam(cnn.parameters(), lr=lr)   # optimize all cnn parameters
     loss_func = nn.CrossEntropyLoss()   # the target label is not one-hotted
