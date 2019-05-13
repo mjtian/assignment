@@ -3,7 +3,7 @@ import torch
 from torch import optim
 import torch.nn as nn
 import numpy as np
-from utils import load_MNIST, random_draw
+from utils import load_MNIST, random_draw, match_ratio
 from CNN import CNN
 
 
@@ -11,9 +11,9 @@ from CNN import CNN
 
 def train():
     train_data, train_label, test_data, test_label = load_MNIST()
-    lr = 1e-3
-    Epoch =40
-    Batchsize_test = 20
+    lr = 1e-4
+    Epoch =1
+    Batchsize_test = 10
     Batchsize_train = 600
     Iteration = len(train_data) // Batchsize_train
 
@@ -37,8 +37,7 @@ def train():
 
              output = cnn(x_train11)
              loss = loss_func(output, x_label111)
-             # import pdb
-             # pdb.set_trace()
+
              optimizer.zero_grad()
              loss.backward()
              optimizer.step()
@@ -75,7 +74,12 @@ def train():
     x_testlabel11 = torch.unbind(x_testlabel11, 1)
     x_testlabel111 = x_testlabel11[1]
     output2 = cnn(x_test11)
+    pred_y = torch.max(output2, 1)[1].data.numpy().squeeze()
+    print(pred_y, 'predicted number')
+    print(x_testlabel111.numpy(), 'real number')
     loss2 = loss_func(output2, x_testlabel111)
+    # import pdb
+     # pdb.set_trace()
     print('After Training.\nTest loss = %.4f' % loss2)
 
 
