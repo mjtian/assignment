@@ -3,11 +3,11 @@ import torch.nn as nn
 import torch.utils.data as Data
 import torchvision      # 数据库模块
 import matplotlib.pyplot as plt
-
+import numpy as np
 torch.manual_seed(1)    # reproducible
 
 # Hyper Parameters
-EPOCH = 1           # 训练一次
+EPOCH = 3          # 训练一次
 BATCH_SIZE = 50
 LR = 0.001          # 学习率
 DOWNLOAD_MNIST = True  # 下载好了mnist数据就写上 False
@@ -60,7 +60,7 @@ class CNN(nn.Module):
         return output
 
 cnn = CNN()
-print(cnn)  # net architecture
+TrainLOSS = []
 
 
 optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)   # optimize all cnn parameters
@@ -70,20 +70,29 @@ loss_func = nn.CrossEntropyLoss()   # the target label is not one-hotted
 for epoch in range(EPOCH):
     for step, (b_x, b_y) in enumerate(train_loader):   # 分配 batch data, normalize x when iterate train_loader
 
-        output = cnn(b_x)               # cnn output
+        output = cnn(b_x) # cnn output
+        import pdb
+        pdb.set_trace()
         loss = loss_func(output, b_y)   # cross entropy loss
         optimizer.zero_grad()           # clear gradients for this training step
         loss.backward()                 # backpropagation, compute gradients
         optimizer.step()                # apply gradients
+        TrainLOSS.append(loss.item())
 
-        if step % 50 == 0:
-           test_output = cnn(test_x)
-           pred_y = torch.max(test_output, 1)[1].data.squeeze()
-           accuracy = sum(pred_y == test_y) / test_y.size(0)
-           print ('Epoch: ', epoch, '| train loss :%4f' % loss.data.numpy(), '| test accuracy : %.2f' % accuracy)
+        # if step % 50 == 0:
+        #    test_output = cnn(test_x)
+        #    pred_y = torch.max(test_output, 1)[1].data.squeeze()
+        #    accuracy = sum(pred_y == test_y) / test_y.size(0)
+        #    print ('Epoch: ', epoch, '| train loss :%4f' % loss.data.numpy(), '| test accuracy : %.2f' % accuracy)
+trainLoss = np.array(TrainLOSS)
+from matplotlib import pyplot as plt
+plt.plot(trainLoss,label="Training")
+plt.legend()
+
+plt.show()
 
 
-test_output = cnn(test_x[:10])
+test_output = cnn(test_x[:30])
 pred_y = torch.max(test_output, 1)[1].data.numpy().squeeze()
-print(pred_y, 'prediction number')
-print(test_y[:10].numpy(), 'real number')
+print(pred_y, 'predicted number')
+print(test_y[:30].numpy(), 'real number')
